@@ -18,15 +18,53 @@ package de.arraying.zeus.backend;
 public enum Patterns {
 
     /**
+     * The general token pattern.
+     * A general token is any character that doesn't really fit in.
+     */
+    TOKEN("[=()]"),
+
+    /**
      * The identifier pattern.
      * Identifiers are used for variable and method names.
      */
     IDENTIFIER("^[a-zA-Z_]{1}[a-zA-Z0-9_]+"),
+
+    /**
+     * The integer pattern.
+     */
     TYPE_INT("^-?[0-9]+$"),
+
+    /**
+     * The boolean pattern.
+     */
     TYPE_BOOL("^(true|false|t|f)$"),
+
+    /**
+     * The long pattern.
+     */
     TYPE_LONG("^[Ll]-?[0-9]+$"),
+
+    /**
+     * The double pattern.
+     */
     TYPE_DOUBLE("^-?[0-9]*\\.[0-9]+$"),
-    TYPE_STRING("^\".*\"$");
+
+    /**
+     * The string pattern.
+     */
+    TYPE_STRING("^\".*\"$"),
+
+    /**
+     * A single line comment pattern.
+     * Prefixed with "TI" to indicate the tokenizer should ignore it.
+     */
+    TI_COMMENT_SINGLE("\\/\\/.*"),
+
+    /**
+     * A multi line comment pattern.
+     * Prefixed with "TI" to indicate the tokenizer should ignore it.
+     */
+    TI_COMMENT_MULTIPLE("\\/\\*.*\\*\\/");
 
     private final String stringPattern;
 

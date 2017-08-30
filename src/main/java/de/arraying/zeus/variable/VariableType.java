@@ -31,7 +31,7 @@ public enum VariableType {
 
     /**
      * Gets a variable type from its string identifier.
-     * @param identifier The string identifier.
+     * @param identifier The string identifier. This must be an identifier.
      * @return A type enumeration or null.
      */
     public static VariableType fromIdentifier(String identifier) {

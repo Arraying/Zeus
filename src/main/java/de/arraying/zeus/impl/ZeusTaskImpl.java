@@ -2,6 +2,8 @@ package de.arraying.zeus.impl;
 
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusTask;
+import de.arraying.zeus.token.Token;
+import de.arraying.zeus.token.Tokenizer;
 
 /**
  * Copyright 2017 Arraying
@@ -23,7 +25,7 @@ public class ZeusTaskImpl implements ZeusTask {
     private final Thread current;
     private final ZeusRuntime runtime;
     private final String[] code;
-    private int currentLine = 0;
+    private int currentIndex = 0;
 
     /**
      * Creates a new task.
@@ -42,12 +44,13 @@ public class ZeusTaskImpl implements ZeusTask {
     @Override
     public void run() {
         while(!current.isInterrupted()
-                && currentLine < code.length) {
-            System.out.println("Interrupted: " + current.isInterrupted());
-            System.out.println("Index " + currentLine + ": \"" + code[currentLine] + "\"");
-            currentLine++;
+                && currentIndex < code.length) {
+            Tokenizer tokenizer = new Tokenizer(code[currentIndex], currentIndex+1);
+            for(Token token : tokenizer.getTokens()) {
+                System.out.println("Token: \"" + token + "\"");
+            }
+            currentIndex++;
         }
-        System.out.println("Reached the end");
     }
 
     /**

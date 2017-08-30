@@ -87,6 +87,7 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
                 lines.add(line);
             }
             bufferedReader.close();
+            System.out.println(lines);
             return evaluate(lines.toArray(new String[lines.size()]));
         } catch(IOException exception) {
             throw new ZeusException(exception.getMessage());
