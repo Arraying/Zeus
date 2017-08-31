@@ -64,7 +64,7 @@ public enum Patterns {
      * A multi line comment pattern.
      * Prefixed with "TI" to indicate the tokenizer should ignore it.
      */
-    TI_COMMENT_MULTIPLE("\\/\\*.*\\*\\/");
+    TI_COMMENT_MULTIPLE("\\/\\*.*\\R*?.*\\*\\/");
 
     private final String stringPattern;
 
