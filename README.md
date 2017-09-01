@@ -46,6 +46,7 @@ Simply add the library as a dependency.
 
 It's fairly forward creating the things inside of java.
 The documented version of the example can be found [here](https://github.com/Arraying/Zeus/blob/master/src/main/java/de/arraying/zeus/Example.java).
+The file mentioned, example.zeus, can be found [here](https://github.com/Arraying/Zeus/blob/master/example.zeus).
 ```java
 package de.arraying.zeus;
 
