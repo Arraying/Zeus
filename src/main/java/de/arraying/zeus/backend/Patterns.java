@@ -18,26 +18,14 @@ package de.arraying.zeus.backend;
 public enum Patterns {
 
     /**
-     * The general token pattern.
-     * A general token is any character that doesn't really fit in.
-     */
-    TOKEN("[=()]"),
-
-    /**
-     * The identifier pattern.
-     * Identifiers are used for variable and method names.
-     */
-    IDENTIFIER("^[a-zA-Z_]{1}[a-zA-Z0-9_]+"),
-
-    /**
      * The integer pattern.
      */
-    TYPE_INT("^-?[0-9]+$"),
+    TYPE_INT("^-?[0-9]+"),
 
     /**
      * The boolean pattern.
      */
-    TYPE_BOOL("^(true|false|t|f)$"),
+    TYPE_BOOL("^(true|false)$"),
 
     /**
      * The long pattern.
@@ -52,19 +40,25 @@ public enum Patterns {
     /**
      * The string pattern.
      */
-    TYPE_STRING("^\".*\"$"),
+    TYPE_STRING("^\"((?:\\\\\"|[^\"])*)\""),
+
+    /**
+     * The identifier pattern.
+     * Identifiers are used for variable and method names.
+     */
+    IDENTIFIER("^[a-zA-Z_]{1}[a-zA-Z0-9_]*"),
+
+    /**
+     * The general token pattern.
+     * A general token is any character that doesn't really fit in.
+     */
+    TOKEN("^[=(),]"),
 
     /**
      * A single line comment pattern.
      * Prefixed with "TI" to indicate the tokenizer should ignore it.
      */
-    TI_COMMENT_SINGLE("\\/\\/.*"),
-
-    /**
-     * A multi line comment pattern.
-     * Prefixed with "TI" to indicate the tokenizer should ignore it.
-     */
-    TI_COMMENT_MULTIPLE("\\/\\*.*\\R*?.*\\*\\/");
+    TI_COMMENT_SINGLE("^\\/\\/.*");
 
     private final String stringPattern;
 

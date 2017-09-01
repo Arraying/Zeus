@@ -1,7 +1,8 @@
-package de.arraying.zeus.std;
+package de.arraying.zeus.std.method.methods;
 
-import de.arraying.zeus.backend.ZeusMethod;
-import de.arraying.zeus.backend.ZeusUtil;
+import de.arraying.zeus.Zeus;
+import de.arraying.zeus.backend.annotations.ZeusStandard;
+import de.arraying.zeus.std.method.ZeusStandardMethod;
 
 /**
  * Copyright 2017 Arraying
@@ -19,32 +20,30 @@ import de.arraying.zeus.backend.ZeusUtil;
  * limitations under the License.
  */
 @SuppressWarnings("unused")
-public class Out implements Standard {
+public @ZeusStandard class StandardMethodsOut implements ZeusStandardMethod {
 
     /**
-     * Prints a string to the console. Appends a new line.
-     * @param toPrint The string to print.
+     * Prints an Object to the console. Appends a new line.
+     * @param toPrint The object to print.
      */
-    @ZeusMethod(methodType = ZeusMethod.Type.STD)
-    public void println(String toPrint) {
+    public void println(Object toPrint) {
         System.out.println(toPrint);
     }
 
     /**
-     * Prints a string to the console.
-     * @param toPrint The string to print.
+     * Prints an Object to the console.
+     * @param toPrint The object  to print.
      */
-    @ZeusMethod(methodType = ZeusMethod.Type.STD)
-    public void print(String toPrint) {
+    public void print(Object toPrint) {
         System.out.print(toPrint);
     }
 
     /**
      * Prints Zeus info to the console.
      */
-    @ZeusMethod(methodType = ZeusMethod.Type.STD)
     public void info() {
-        System.out.println("Zeus v" + ZeusUtil.VERSION + " by " + ZeusUtil.AUTHOR + ".");
+        System.out.println("Currently running Zeus, by " + Zeus.AUTHOR + ", version " + Zeus.VERSION + "." +
+                "\nThanks to: " + String.join(", ", Zeus.CONTRIBUTORS) + ".");
     }
 
 }

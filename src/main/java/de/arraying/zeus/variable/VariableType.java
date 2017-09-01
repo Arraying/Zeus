@@ -57,4 +57,11 @@ public enum VariableType {
         this.identifier = identifier.toLowerCase();
     }
 
+    /**
+     * Gets the keyword identifier.
+     * @return A string identifier.
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
 }

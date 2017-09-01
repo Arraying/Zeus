@@ -1,4 +1,9 @@
-package de.arraying.zeus.runtime;
+package de.arraying.zeus.backend.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Copyright 2017 Arraying
@@ -15,17 +20,6 @@ package de.arraying.zeus.runtime;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public interface ZeusTask extends Runnable {
-
-    /**
-     * Starts the evaluation of the tasks.
-     * This should only be invoked once.
-     */
-    void evaluate();
-
-    /**
-     * Kills the task.
-     */
-    void kill();
-
-}
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ZeusMethod {}

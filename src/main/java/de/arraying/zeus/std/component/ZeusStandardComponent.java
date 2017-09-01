@@ -1,4 +1,4 @@
-package de.arraying.zeus.runtime;
+package de.arraying.zeus.std.component;
 
 /**
  * Copyright 2017 Arraying
@@ -15,17 +15,4 @@ package de.arraying.zeus.runtime;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public interface ZeusTask extends Runnable {
-
-    /**
-     * Starts the evaluation of the tasks.
-     * This should only be invoked once.
-     */
-    void evaluate();
-
-    /**
-     * Kills the task.
-     */
-    void kill();
-
-}
+public interface ZeusStandardComponent extends ZeusComponent {}

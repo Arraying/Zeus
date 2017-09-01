@@ -1,10 +1,9 @@
 package de.arraying.zeus.impl;
 
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusUtil;
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusTask;
-import de.arraying.zeus.variable.VariableType;
+import de.arraying.zeus.std.component.ZeusComponent;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.io.BufferedReader;
@@ -12,10 +11,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 /**
  * Copyright 2017 Arraying
@@ -34,17 +35,28 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class ZeusRuntimeImpl implements ZeusRuntime {
 
-    private final ConcurrentMap<String, ZeusVariable> variables;
-    private final ConcurrentMap<String, Method> methods;
+    private ScheduledExecutorService executorService;
+    private final Map<String, ZeusVariable> predefinedVariables;
+    private final Map<String, Method> methods;
+    private final ZeusComponent[] components;
+    private final int timeoutThreshold;
+    private boolean isShutdown;
 
     /**
      * Creates a new Zeus runtime.
-     * @param variables The predefined variables.
+     * @param predefinedVariables The predefined variables.
      * @param methods A set of methods.
+     * @param timeoutThreshold The timeout threshold.
      */
-    public ZeusRuntimeImpl(Map<String, ZeusVariable> variables, Map<String, Method> methods) {
-        this.variables = new ConcurrentHashMap<>(variables);
-        this.methods = new ConcurrentHashMap<>(methods);
+    public ZeusRuntimeImpl(Map<String, ZeusVariable> predefinedVariables, Map<String, Method> methods, ZeusComponent[] components, int timeoutThreshold) {
+        this.predefinedVariables = predefinedVariables;
+        this.methods = methods;
+        this.components = components;
+        this.timeoutThreshold = timeoutThreshold;
+        this.isShutdown = false;
+        if(timeoutThreshold != -1) {
+            executorService = Executors.newScheduledThreadPool(5);
+        }
     }
 
     /**
@@ -54,16 +66,22 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
      * @throws ZeusException If an error occurs.
      */
     @Override
-    public ZeusTask evaluate(String[] code)
+    public ZeusTask evaluate(String[] code, Consumer<ZeusException> error)
             throws ZeusException {
+        if(isShutdown) {
+            throw new ZeusException("The runtime has been shut down, thus no tasks can be evaluated.");
+        }
         if(code == null) {
             throw new ZeusException("The code provided must not be null.");
         }
         if(code.length == 0) {
             throw new ZeusException("The code provided must not be empty.");
         }
-        ZeusTask task = new ZeusTaskImpl(this, code);
+        ZeusTaskImpl task = new ZeusTaskImpl(this, predefinedVariables, error, code);
         task.evaluate();
+        if(executorService != null) {
+            executorService.schedule(task::kill, timeoutThreshold, TimeUnit.MILLISECONDS);
+        }
         return task;
     }
 
@@ -74,7 +92,7 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
      * @throws ZeusException If an error occurs.
      */
     @Override
-    public ZeusTask evaluate(File file)
+    public ZeusTask evaluate(File file, Consumer<ZeusException> error)
             throws ZeusException {
         if(file == null) {
             throw new ZeusException("The file provided must not be null.");
@@ -87,71 +105,48 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
                 lines.add(line);
             }
             bufferedReader.close();
-            System.out.println(lines);
-            return evaluate(lines.toArray(new String[lines.size()]));
+            return evaluate(lines.toArray(new String[lines.size()]), error);
         } catch(IOException exception) {
             throw new ZeusException(exception.getMessage());
         }
     }
 
     /**
-     * Gets a variable by identifier.
-     * @param identifier The identifier.
-     * @return A variable, or null if a variable with that identifier does not exist.
-     * @throws ZeusException If the identifier is null.
+     * Gets all components.
+     * @return An array of components.
      */
-    @Override
-    public synchronized ZeusVariable getVariable(String identifier)
-            throws ZeusException {
-        if(identifier == null) {
-            throw new ZeusException("The variable identifier may not be null.");
-        }
-        return variables.get(identifier);
+    ZeusComponent[] getComponents() {
+        return components;
     }
 
     /**
-     * Gets a method by identifier.
-     * @param identifier The identifier.
-     * @return A method, or null if a method with that identifier does not exist.
-     * @throws ZeusException If the identifier is null.
+     * Gets all methods.
+     * @return An unmodifiable map of methods.
      */
-    @Override
-    public Method getMethod(String identifier)
-            throws ZeusException {
-        if(identifier == null) {
-            throw new ZeusException("The method identifier may not be null.");
-        }
-        return methods.get(identifier);
+    Map<String, Method> getMethods() {
+        return Collections.unmodifiableMap(methods);
     }
 
     /**
-     * Updates a variable. This can be modifying its value
-     * or simply creating it.
-     * @param variable The variable.
-     * @throws ZeusException If the variable is a constant.
+     * Checks whether or not the runtime has been shut down.
+     * @return True if it has, false otherwise.
      */
-    @Override
-    public synchronized void updateVariable(ZeusVariable variable)
-            throws ZeusException {
-        ZeusVariable existing = getVariable(variable.identifier());
-        if(existing != null
-                && existing.type() == VariableType.CONSTANT) {
-            throw new ZeusException("You can not update a constant variable.");
-        }
-
+    boolean isShutdown() {
+        return isShutdown;
     }
 
     /**
-     * Removes a method.
-     * @param method The method to remove.
-     * @throws ZeusException If the method cannot be removed.
+     * Completely shuts down the runtime.
+     * @throws ZeusException If the runtime has already been shutdown.
      */
     @Override
-    public synchronized void removeMethod(Method method)
+    public synchronized void shutdown()
             throws ZeusException {
-        if(ZeusUtil.isStandardMethod(method)) {
-            throw new ZeusException("Standard library methods may not be removed.");
+        if(isShutdown) {
+            throw new ZeusException("The runtime has already been shut down.");
         }
+        executorService.shutdown();
+        isShutdown = true;
     }
 
 

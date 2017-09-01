@@ -1,0 +1,10 @@
+// Declares another variable. It is declared a constant and therefor cannot be changed.
+const my_other_var = "Hello, this is another variable"
+
+// Invokes our custom method. Once with a predefined variable, and once with this current runtime variable.
+show_my_variable(my_var)
+show_my_variable(my_other_var)
+
+// Prints out the following:
+// My variable's value is: My Variable!
+// My variable's value is: Hello, this is another variable!

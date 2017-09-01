@@ -1,4 +1,4 @@
-package de.arraying.zeus.std;
+package de.arraying.zeus.std.method;
 
 /**
  * Copyright 2017 Arraying
@@ -15,4 +15,4 @@ package de.arraying.zeus.std;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public interface Standard {}
+public interface ZeusStandardMethod {}

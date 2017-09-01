@@ -5,6 +5,7 @@ import de.arraying.zeus.variable.ZeusVariable;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 /**
  * Copyright 2017 Arraying
@@ -27,10 +28,11 @@ public interface ZeusRuntime {
     /**
      * Evaluates the code given.
      * @param code The code. Each array entry represents one line of code.
+     * @param error The consumer for when an error occurs.
      * @return The Zeus evaluation task.
      * @throws ZeusException If an error occurs.
      */
-    ZeusTask evaluate(String[] code) throws ZeusException;
+    ZeusTask evaluate(String[] code, Consumer<ZeusException> error) throws ZeusException;
 
     /**
      * Evaluates the code given.
@@ -38,40 +40,13 @@ public interface ZeusRuntime {
      * @return The Zeus evaluation task.
      * @throws ZeusException If an error occurs.
      */
-    ZeusTask evaluate(File file) throws ZeusException;
+    ZeusTask evaluate(File file, Consumer<ZeusException> error) throws ZeusException;
 
     /**
-     * Gets a variable by identifier.
-     * Must run synchronized.
-     * @param identifier The identifier.
-     * @return A variable or null.
-     * @throws ZeusException If the identifier is null.
+     * Completely shuts down the runtime.
+     * All current evaluations will at finish the line they are processing and then shut down.
+     * @throws ZeusException If the runtime has already been shut down.
      */
-    ZeusVariable getVariable(String identifier) throws ZeusException;
-
-    /**
-     * Gets a method by identifier.
-     * Must be run synchronised.
-     * @param identifier The identifier.
-     * @return A method or null.
-     * @throws ZeusException If the identifier is null.
-     */
-    Method getMethod(String identifier) throws ZeusException;
-
-    /**
-     * Updates a variable.
-     * Must run synchronized.
-     * @param variable The variable.
-     * @throws ZeusException If the variable is immutable.
-     */
-    void updateVariable(ZeusVariable variable) throws ZeusException;
-
-    /**
-     * Removes a method.
-     * Must run synchronized.
-     * @param method The method to remove.
-     * @throws ZeusException If the method is a std method.
-     */
-    void removeMethod(Method method) throws ZeusException;
+    void shutdown() throws ZeusException;
 
 }

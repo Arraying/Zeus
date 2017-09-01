@@ -1,4 +1,4 @@
-package de.arraying.zeus.backend;
+package de.arraying.zeus.backend.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,28 +20,6 @@ import java.lang.annotation.Target;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ZeusMethod {
-
-    /**
-     * Gets the method type.
-     * @return The method type.
-     */
-    Type methodType() default Type.CUST;
-
-    enum Type {
-
-        /**
-         * Indicates the method is part of the standard library.
-         */
-        STD,
-
-        /**
-         * Indicates that the method is custom.
-         */
-        CUST
-
-    }
-
-}
+public @interface ZeusStandard {}

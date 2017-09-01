@@ -1,6 +1,7 @@
 package de.arraying.zeus.token;
 
 import de.arraying.zeus.backend.Patterns;
+import de.arraying.zeus.backend.ZeusException;
 
 import java.util.LinkedList;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ public class Tokenizer {
     private final int lineNumber;
     private final LinkedList<TokenEntry> entries;
     private String line;
+    private Token[] cachedTokens;
 
     /**
      * Creates a new tokenizer.
@@ -35,8 +37,7 @@ public class Tokenizer {
         this.lineNumber = lineNumber;
         this.entries = new LinkedList<>();
         this.line = line
-                .replaceAll(Patterns.TI_COMMENT_SINGLE.getStringPattern(), "")
-                .replaceAll(Patterns.TI_COMMENT_MULTIPLE.getStringPattern(), "");
+                .replaceAll(Patterns.TI_COMMENT_SINGLE.getStringPattern(), "");
         for(Patterns pattern : Patterns.values()) {
             if(pattern.name().startsWith("TI")) {
                 continue;
@@ -49,25 +50,31 @@ public class Tokenizer {
     /**
      * Gets all the tokens of the current line.
      * @return An array of tokens.
+     * @throws ZeusException If an error occurs.
      */
-    public Token[] getTokens() {
-        line = line.trim();
+    public Token[] getTokens()
+            throws ZeusException {
+        if(cachedTokens != null) {
+            return cachedTokens;
+        }
         LinkedList<Token> tokens = new LinkedList<>();
+        whileLoop:
         while(!line.isEmpty()) {
-            System.out.println("Line: " + line);
+            line = line.trim();
             for(TokenEntry entry : entries) {
-                System.out.println("At " + entry + "::" + entry.getType());
                 Matcher matcher = entry.getPattern().matcher(line);
                 if(!matcher.find()) {
-                    System.out.println("No match.");
                     continue;
                 }
                 String tokenString = matcher.group().trim();
                 tokens.add(new Token(tokenString, entry.getType()));
                 line = matcher.replaceFirst("");
+                continue whileLoop;
             }
+            throw new ZeusException("Unknown token \"" + line + "\" at line " + lineNumber + ".");
         }
-        return tokens.toArray(new Token[tokens.size()]);
+        cachedTokens = tokens.toArray(new Token[tokens.size()]);
+        return cachedTokens;
     }
 
 }
