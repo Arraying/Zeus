@@ -1,7 +1,6 @@
 package de.arraying.zeus.runtime;
 
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusUtil;
 import de.arraying.zeus.backend.annotations.ZeusMethod;
 import de.arraying.zeus.backend.annotations.ZeusStandard;
 import de.arraying.zeus.impl.ZeusRuntimeImpl;
@@ -10,7 +9,9 @@ import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.std.component.components.StandardComponentMethod;
 import de.arraying.zeus.std.component.components.StandardComponentVariable;
 import de.arraying.zeus.std.method.ZeusStandardMethod;
+import de.arraying.zeus.std.method.methods.StandardMethodsLogic;
 import de.arraying.zeus.std.method.methods.StandardMethodsOut;
+import de.arraying.zeus.utils.ZeusMethodUtil;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.lang.reflect.Method;
@@ -34,14 +35,15 @@ import java.util.Map;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings("ALL")
 public class ZeusRuntimeBuilder {
 
     private final Map<String, ZeusVariable> variables = new HashMap<>();
     private final Map<String, Method> methods = new HashMap<>();
     private final List<ZeusComponent> components = new ArrayList<>();
     private final ZeusStandardMethod[] standardMethods = new ZeusStandardMethod[] {
-            new StandardMethodsOut()
+            new StandardMethodsOut(),
+            new StandardMethodsLogic(),
     };
     private final ZeusStandardComponent[] standardComponents = new ZeusStandardComponent[] {
             new StandardComponentVariable(),
@@ -81,16 +83,16 @@ public class ZeusRuntimeBuilder {
                 for(Method method : provided.getMethods()) {
                     methods.put(method.getName(), method);
                 }
-                return this;
+                continue;
             }
-            if(!ZeusUtil.isValidMethodContainer(provided)) {
+            if(!ZeusMethodUtil.isValidMethodContainer(provided)) {
                 throw new ZeusException("The method container must have an empty constructor and must be accessible.");
             }
             for(Method method : provided.getMethods()) {
                 if(!method.isAnnotationPresent(ZeusMethod.class)) {
                     continue;
                 }
-                if(!ZeusUtil.isValidMethod(method)) {
+                if(!ZeusMethodUtil.isValidMethod(method)) {
                     throw new ZeusException("The provided method (" + method.getName() + ") is invalid.");
                 }
                 methods.put(method.getName(), method);
@@ -141,9 +143,9 @@ public class ZeusRuntimeBuilder {
      */
     public ZeusRuntimeBuilder withMaximumRuntime(int timeoutThreshold)
             throws ZeusException {
-//        if(timeoutThreshold < 2000) {
-//            throw new ZeusException("The provided timeout threshold must be at least 2000 milliseconds.");
-//        }
+        if(timeoutThreshold < 2000) {
+            throw new ZeusException("The provided timeout threshold must be at least 2000 milliseconds.");
+        }
         if(timeoutThreshold > 43200000) {
             throw new ZeusException("The provided timeout threshold must be under 43200000 milliseconds.");
         }

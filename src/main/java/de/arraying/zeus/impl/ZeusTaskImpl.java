@@ -125,8 +125,7 @@ public class ZeusTaskImpl implements ZeusTask {
         ZeusVariable existing = variables.get(variable.identifier());
         if(existing != null
                 && existing.type() == VariableType.CONSTANT) {
-            throw new ZeusException("The variable \"" + variable.identifier() + "\" cannot be updated as it is a constant at line "
-                    + lineNumber + ".");
+            throw new ZeusException("The variable \"" + variable.identifier() + "\" cannot be updated as it is a constant.", lineNumber);
         }
         variables.put(variable.identifier(), variable);
     }

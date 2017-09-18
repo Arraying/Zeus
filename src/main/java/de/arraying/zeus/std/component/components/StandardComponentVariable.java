@@ -2,11 +2,17 @@ package de.arraying.zeus.std.component.components;
 
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusUtil;
+import de.arraying.zeus.backend.ZeusMethod;
 import de.arraying.zeus.impl.ZeusTaskImpl;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.token.Token;
+import de.arraying.zeus.utils.ZeusMethodUtil;
+import de.arraying.zeus.utils.ZeusUtil;
+import de.arraying.zeus.utils.ZeusVariableUtil;
 import de.arraying.zeus.variable.VariableType;
+import de.arraying.zeus.variable.ZeusVariable;
+
+import java.util.Arrays;
 
 /**
  * Copyright 2017 Arraying
@@ -27,13 +33,13 @@ public class StandardComponentVariable implements ZeusStandardComponent {
 
     /**
      * Invokes the component.
-     * @param runtime The impl of the task in order to access some impl only methods.
+     * @param task The impl of the task in order to access some impl only methods.
      * @param tokens An array of all tokens that have been tokenized.
      * @param lineNumber The line number.
      * @throws ZeusException If an error occurs.
      */
     @Override
-    public void invoke(ZeusTaskImpl runtime, Token[] tokens, int lineNumber)
+    public void invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber)
             throws ZeusException {
         Token variableType = tokens[0];
         if(variableType.getType() != Patterns.IDENTIFIER) {
@@ -44,38 +50,58 @@ public class StandardComponentVariable implements ZeusStandardComponent {
             return;
         }
         if(tokens.length < 2) {
-            throw new ZeusException("Expected an identifier for variable declaration at line " + lineNumber + ".");
+            throw new ZeusException("Expected an identifier for variable declaration.", lineNumber);
         }
         Token identifier = tokens[1];
         if(identifier.getType() != Patterns.IDENTIFIER) {
             throw new ZeusException("Expected an identifier for variable declaration, instead found " +
-                    identifier.getType() + " at line " + lineNumber + ".");
+                    identifier.getType() + ".", lineNumber);
         }
         String name = identifier.getToken();
         if(ZeusUtil.isKeyword(name)) {
-            throw new ZeusException("The variable name \"" + name + "\" is invalid as it is a keyword.");
+            throw new ZeusException("The variable name \"" + name + "\" is invalid as it is a keyword.", lineNumber);
         }
         if(tokens.length < 3) {
-            throw new ZeusException("Expected an equals sign for variable declaration at line " + lineNumber + ".");
+            throw new ZeusException("Expected an equals sign for variable declaration.", lineNumber);
         }
         Token equals = tokens[2];
         if(equals.getType() != Patterns.TOKEN) {
             throw new ZeusException("Expected a literal token for variable token, instead found " +
-                    equals.getType() + " at line " + lineNumber + ".");
+                    equals.getType() + ".", lineNumber);
         }
         if(!equals.getToken().equals("=")) {
             throw new ZeusException("Expected the token \"=\" for variable token, instead found \"" +
-                    equals.getToken() + "\" at line " + lineNumber + ".");
+                    equals.getToken() + "\".", lineNumber);
         }
         if(tokens.length < 4) {
-            throw new ZeusException("Expected a variable value at line " + lineNumber + ".");
+            throw new ZeusException("Expected a variable value.", lineNumber);
         }
         Token value = tokens[3];
-        Object variableValue = ZeusUtil.getVariableValue(value);
-        if(variableValue == null) {
-            throw new ZeusException("Invalid variable value at line " + lineNumber + ".");
+        Object variableValue;
+        if(value.getType().isDataType()) {
+            variableValue = ZeusVariableUtil.getVariableValue(value);
+            if(variableValue == null) {
+                throw new ZeusException("Invalid variable value.", lineNumber);
+            }
+        } else if(value.getType() == Patterns.IDENTIFIER) {
+            if(tokens.length == 4) {
+                ZeusVariable variable = task.getVariable(value.getToken());
+                if(variable == null) {
+                    throw new ZeusException("The variable \"" + value.getToken() + "\" defined in the variable declaration does not exist.", lineNumber);
+                }
+                variableValue = variable.value();
+            } else {
+                Token[] methodTokens = Arrays.copyOfRange(tokens, 3, tokens.length);
+                ZeusMethod method = ZeusMethodUtil.processMethod(task, methodTokens, lineNumber);
+                if(method.getReturnValue() == null) {
+                    throw new ZeusException("The method in variable declaration returned null.", lineNumber);
+                }
+                variableValue = method.getReturnValue();
+            }
+        } else {
+            throw new ZeusException("Found unexpected token as a variable value.", lineNumber);
         }
-        runtime.updateVariable(ZeusUtil.createVariable(type, name, variableValue), lineNumber);
+        task.updateVariable(ZeusVariableUtil.createVariable(type, name, variableValue), lineNumber);
     }
 
 }

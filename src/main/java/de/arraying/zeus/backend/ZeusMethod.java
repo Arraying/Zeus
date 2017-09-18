@@ -15,34 +15,35 @@ package de.arraying.zeus.backend;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class ZeusException extends Exception {
+public class ZeusMethod {
 
-    private final int lineNumber;
+    private final Object returnValue;
+    private final boolean valid;
 
     /**
-     * Creates a new Zeus exception.
-     * @param message The exception message.
+     * Creates a new Zeus method result.
+     * @param returnValue The return value. Can be null.
+     * @param valid Whether or not the method is valid.
      */
-    public ZeusException(String message) {
-        this(message, -1);
+    public ZeusMethod(Object returnValue, boolean valid) {
+        this.valid = valid;
+        this.returnValue = returnValue;
     }
 
     /**
-     * Creates a new Zeus exception.
-     * @param message The exception message.
-     * @param lineNumber The line number.
+     * Gets the return value.
+     * @return The return value.
      */
-    public ZeusException(String message, int lineNumber) {
-        super(message);
-        this.lineNumber = lineNumber;
+    public Object getReturnValue() {
+        return returnValue;
     }
 
     /**
-     * Gets the line number.
-     * @return The line number, or -1 if there is no line number.
+     * Whether the method is valid.
+     * @return The validity.
      */
-    public int getLineNumber() {
-        return lineNumber;
+    public boolean isValid() {
+        return valid;
     }
 
 }

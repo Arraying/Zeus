@@ -48,6 +48,4 @@ public class Token {
         return type;
     }
 
-    // get next index of " where char before isn't an escape
-
 }

@@ -1,11 +1,11 @@
 package de.arraying.zeus;
 
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusUtil;
 import de.arraying.zeus.backend.annotations.ZeusMethod;
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusRuntimeBuilder;
 import de.arraying.zeus.runtime.ZeusTask;
+import de.arraying.zeus.utils.ZeusVariableUtil;
 import de.arraying.zeus.variable.VariableType;
 
 import java.io.File;
@@ -57,9 +57,9 @@ public class Example {
             builder.withMethods(new Example());
 
             // You can also predefine variables before runtime.
-            // You need a ZeusVariable object for this. The easiest way to obtain one is using ZeusUtil.
+            // You need a ZeusVariable object for this. The easiest way to obtain one is using ZeusVariableUtil.
             // Like .withMethods, .withVariables also supports varargs.
-            builder.withVariables(ZeusUtil.createVariable(VariableType.CONSTANT, "my_var", "My Variable"));
+            builder.withVariables(ZeusVariableUtil.createVariable(VariableType.CONSTANT, "my_var", "My Variable"));
 
             // There are a lot of other methods that can be used in the builder, but for the sake of keeping
             // this simple they will not be covered.

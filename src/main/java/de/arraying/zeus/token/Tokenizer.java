@@ -71,7 +71,7 @@ public class Tokenizer {
                 line = matcher.replaceFirst("");
                 continue whileLoop;
             }
-            throw new ZeusException("Unknown token \"" + line + "\" at line " + lineNumber + ".");
+            throw new ZeusException("Unknown token \"" + line + "\".", lineNumber);
         }
         cachedTokens = tokens.toArray(new Token[tokens.size()]);
         return cachedTokens;

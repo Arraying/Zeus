@@ -25,11 +25,11 @@ public interface ZeusComponent {
      * Invokes the component. The component should then check if the provided
      * tokens have anything to do with it. The task manager will not do any sort
      * of checking, so everything is up to the component.
-     * @param runtime The impl of the task in order to access some impl only methods.
+     * @param task The impl of the task in order to access some impl only methods.
      * @param tokens An array of all tokens that have been tokenized.
      * @param lineNumber The line number.
      * @throws ZeusException If an error occurs.
      */
-    void invoke(ZeusTaskImpl runtime, Token[] tokens, int lineNumber) throws ZeusException;
+    void invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber) throws ZeusException;
 
 }

@@ -20,27 +20,27 @@ public enum Patterns {
     /**
      * The integer pattern.
      */
-    TYPE_INT("^-?[0-9]+"),
+    TYPE_INT("^-?[0-9]+", true),
 
     /**
      * The boolean pattern.
      */
-    TYPE_BOOL("^(true|false)$"),
+    TYPE_BOOL("^(true|false)$", true),
 
     /**
      * The long pattern.
      */
-    TYPE_LONG("^[Ll]-?[0-9]+$"),
+    TYPE_LONG("^[Ll]-?[0-9]+$", true),
 
     /**
      * The double pattern.
      */
-    TYPE_DOUBLE("^-?[0-9]*\\.[0-9]+$"),
+    TYPE_DOUBLE("^-?[0-9]*\\.[0-9]+$", true),
 
     /**
      * The string pattern.
      */
-    TYPE_STRING("^\"((?:\\\\\"|[^\"])*)\""),
+    TYPE_STRING("^\"((?:\\\\\"|[^\"])*)\"", true),
 
     /**
      * The identifier pattern.
@@ -61,13 +61,24 @@ public enum Patterns {
     TI_COMMENT_SINGLE("^\\/\\/.*");
 
     private final String stringPattern;
+    private final boolean dataType;
+
+    /**
+     * Sets the pattern. Will also indicate that the pattern is not a datatype.
+     * @param stringPattern A regular expression as a string.
+     */
+    Patterns(String stringPattern) {
+        this(stringPattern, false);
+    }
 
     /**
      * Sets the pattern.
      * @param stringPattern A regular expression as a string.
+     * @param dataType The data type
      */
-    Patterns(String stringPattern) {
+    Patterns(String stringPattern, boolean dataType) {
         this.stringPattern = stringPattern;
+        this.dataType = dataType;
     }
 
     /**
@@ -76,6 +87,14 @@ public enum Patterns {
      */
     public String getStringPattern() {
         return getStringPattern(false);
+    }
+
+    /**
+     * Whether or not the pattern is a data type.
+     * @return True if it is, false otherwise.
+     */
+    public boolean isDataType() {
+        return dataType;
     }
 
     /**

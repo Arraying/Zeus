@@ -2,7 +2,7 @@ package de.arraying.zeus.impl;
 
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusUtil;
+import de.arraying.zeus.utils.ZeusVariableUtil;
 import de.arraying.zeus.variable.VariableType;
 import de.arraying.zeus.variable.ZeusVariable;
 
@@ -53,7 +53,7 @@ public class ZeusVariableImpl implements ZeusVariable {
         if(value == null) {
             throw new ZeusException("The variable value cannot be null.");
         }
-        if(!ZeusUtil.isValidVariableValue(value)) {
+        if(!ZeusVariableUtil.isValidValue(value.getClass())) {
             throw new ZeusException("The variable value passed in is not a supported variable value.");
         }
         this.value = value;
