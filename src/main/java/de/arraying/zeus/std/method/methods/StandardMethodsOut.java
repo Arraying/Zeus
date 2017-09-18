@@ -25,17 +25,21 @@ public @ZeusStandard class StandardMethodsOut implements ZeusStandardMethod {
     /**
      * Prints an Object to the console. Appends a new line.
      * @param toPrint The object to print.
+     * @return The input.
      */
-    public void println(Object toPrint) {
+    public Object println(Object toPrint) {
         System.out.println(toPrint);
+        return toPrint;
     }
 
     /**
      * Prints an Object to the console.
      * @param toPrint The object  to print.
+     * @return The input.
      */
-    public void print(Object toPrint) {
+    public Object print(Object toPrint) {
         System.out.print(toPrint);
+        return toPrint;
     }
 
     /**

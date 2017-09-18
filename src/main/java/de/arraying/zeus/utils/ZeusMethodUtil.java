@@ -41,9 +41,8 @@ public class ZeusMethodUtil {
                 || !Modifier.isPublic(method.getModifiers())) {
             return false;
         }
-        if(!method.getReturnType().equals(Void.TYPE)
-                && !ZeusVariableUtil.isValidValue(method.getReturnType().getClass())) {
-            return false;
+        if(!method.getReturnType().equals(Void.TYPE)) {
+            return ZeusVariableUtil.isValidValue(method.getReturnType());
         }
         Class<?>[] parameters = method.getParameterTypes();
         if(parameters.length == 0) {
