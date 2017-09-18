@@ -71,7 +71,7 @@ public class Example {
         try {
             ZeusRuntimeBuilder builder = new ZeusRuntimeBuilder(ZeusRuntimeBuilder.Configuration.STANDARD)
               .withMethods(new Example())
-              .withVariables(ZeusUtil.createVariable(VariableType.CONSTANT, "my_var", "My Variable"));
+              .withVariables(ZeusVariableUtil.createVariable(VariableType.CONSTANT, "my_var", "My Variable"));
             ZeusRuntime runtime = builder.build();
             ZeusTask task = runtime.evaluate(new File("example.zeus"), Throwable::printStackTrace);
         } catch(ZeusException exception) {
