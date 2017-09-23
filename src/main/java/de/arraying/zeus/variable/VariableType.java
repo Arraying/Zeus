@@ -1,5 +1,7 @@
 package de.arraying.zeus.variable;
 
+import de.arraying.zeus.backend.Keyword;
+
 /**
  * Copyright 2017 Arraying
  * <p>
@@ -15,19 +17,20 @@ package de.arraying.zeus.variable;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@SuppressWarnings("unused")
 public enum VariableType {
 
     /**
      * A constant variable.
      * Constants can only be declared once and they will not change.
      */
-    CONSTANT("const"),
+    CONSTANT(Keyword.VAR_CONSTANT),
 
     /**
      * A mutable variable.
      * This variable can be reassigned as often as wanted.
      */
-    MUTABLE("mut");
+    MUTABLE(Keyword.VAR_MUTABLE);
 
     /**
      * Gets a variable type from its string identifier.
@@ -39,29 +42,22 @@ public enum VariableType {
             return null;
         }
         for(VariableType type : values()) {
-            if(type.identifier.equals(identifier)) {
+            if(type.keyword.getIdentifier().equals(identifier)) {
                 return type;
             }
         }
         return null;
     }
 
-    private final String identifier;
+    private final Keyword keyword;
 
     /**
      * Sets the identifier for a variable type.
-     * The identifier is the string used to determine the type of variable.
-     * @param identifier The identifier.
+     * The identifier is the keyword used to identify the type of variable.
+     * @param keyword The keyword.
      */
-    VariableType(String identifier) {
-        this.identifier = identifier.toLowerCase();
+    VariableType(Keyword keyword) {
+        this.keyword = keyword;
     }
 
-    /**
-     * Gets the keyword identifier.
-     * @return A string identifier.
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
 }

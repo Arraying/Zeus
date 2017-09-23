@@ -51,11 +51,11 @@ The file mentioned, example.zeus, can be found [here](https://github.com/Arrayin
 package de.arraying.zeus;
 
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusUtil;
 import de.arraying.zeus.backend.annotations.ZeusMethod;
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusRuntimeBuilder;
 import de.arraying.zeus.runtime.ZeusTask;
+import de.arraying.zeus.utils.ZeusVariableUtil;
 import de.arraying.zeus.variable.VariableType;
 
 import java.io.File;
@@ -66,15 +66,15 @@ public class Example {
     public void show_my_variable(String variableValue) {
         System.out.println("My variable's value is: " + variableValue + "!");
     }
-    
+
     public static void main(String[] args) {
         try {
-            ZeusRuntimeBuilder builder = new ZeusRuntimeBuilder(ZeusRuntimeBuilder.Configuration.STANDARD)
-              .withMethods(new Example())
-              .withVariables(ZeusVariableUtil.createVariable(VariableType.CONSTANT, "my_var", "My Variable"));
+            ZeusRuntimeBuilder builder = new ZeusRuntimeBuilder(ZeusRuntimeBuilder.Configuration.STANDARD);
+            builder.withMethods(new Example());
+            builder.withVariables(ZeusVariableUtil.createVariable(VariableType.CONSTANT, "my_var", "My Variable"));
             ZeusRuntime runtime = builder.build();
             ZeusTask task = runtime.evaluate(new File("example.zeus"), Throwable::printStackTrace);
-        } catch(ZeusException exception) {
+        } catch(ZeusException exception) { // Exceptions can occur during the building process, too.
             exception.printStackTrace();
         }
     }

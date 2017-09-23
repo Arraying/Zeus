@@ -1,8 +1,8 @@
 package de.arraying.zeus.std.component.components;
 
+import de.arraying.zeus.backend.Keyword;
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusMethod;
 import de.arraying.zeus.impl.ZeusTaskImpl;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.token.Token;
@@ -22,7 +22,7 @@ import de.arraying.zeus.token.Token;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class StandardComponentMethod implements ZeusStandardComponent {
+public class StandardComponentStop implements ZeusStandardComponent {
 
     /**
      * Invokes the component.
@@ -36,10 +36,13 @@ public class StandardComponentMethod implements ZeusStandardComponent {
             throws ZeusException {
         Token identifier = tokens[0];
         if(identifier.getType() != Patterns.IDENTIFIER
-                || !ZeusMethod.isValidMethodInvocation(tokens)) {
+                || !identifier.getToken().equals(Keyword.CONTROL_STOP.getIdentifier())) {
             return;
         }
-        ZeusMethod.processMethod(task, tokens, lineNumber);
+        if(tokens.length != 1) {
+            throw new ZeusException("Expected just the stop keyword, nothing else.", lineNumber);
+        }
+        task.kill();
     }
 
 }

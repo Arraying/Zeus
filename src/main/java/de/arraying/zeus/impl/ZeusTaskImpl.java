@@ -98,10 +98,11 @@ public class ZeusTaskImpl implements ZeusTask {
     /**
      * Gets a method by identifier.
      * @param identifier The identifier or the method.
+     * @param parameterCount The number of parameters.
      * @return A method or null if it does not exist.
      */
-    public Method getMethod(String identifier) {
-        return runtime.getMethods().get(identifier);
+    public Method getMethod(String identifier, int parameterCount) {
+        return runtime.getMethods().getMethod(identifier, parameterCount);
     }
 
     /**

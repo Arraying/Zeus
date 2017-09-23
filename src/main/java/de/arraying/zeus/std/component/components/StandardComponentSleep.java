@@ -1,8 +1,8 @@
 package de.arraying.zeus.std.component.components;
 
+import de.arraying.zeus.backend.Keyword;
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusMethod;
 import de.arraying.zeus.impl.ZeusTaskImpl;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.token.Token;
@@ -22,7 +22,7 @@ import de.arraying.zeus.token.Token;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class StandardComponentMethod implements ZeusStandardComponent {
+public class StandardComponentSleep implements ZeusStandardComponent {
 
     /**
      * Invokes the component.
@@ -36,10 +36,30 @@ public class StandardComponentMethod implements ZeusStandardComponent {
             throws ZeusException {
         Token identifier = tokens[0];
         if(identifier.getType() != Patterns.IDENTIFIER
-                || !ZeusMethod.isValidMethodInvocation(tokens)) {
+                || !identifier.getToken().equals(Keyword.CONTROL_SLEEP.getIdentifier())) {
             return;
         }
-        ZeusMethod.processMethod(task, tokens, lineNumber);
+        if(tokens.length != 2) {
+            throw new ZeusException("Expected just the sleep keyword and a duration (long), found more/less.", lineNumber);
+        }
+        Token duration = tokens[1];
+        if(duration.getType() != Patterns.TYPE_LONG) {
+            throw new ZeusException("Expected a long for the sleep duration.", lineNumber);
+        }
+        long sleep;
+        try {
+            sleep = Long.valueOf(duration.getToken().substring(1));
+        } catch(NumberFormatException exception) {
+            sleep = -1;
+        }
+        if(sleep <= 0) {
+            throw new ZeusException("The provided sleep duration is not a valid duration.", lineNumber);
+        }
+        try {
+            Thread.sleep(sleep);
+        } catch(InterruptedException exception) {
+            throw new ZeusException("Attempted to sleep the code, but hit an interrupted exception.", lineNumber);
+        }
     }
 
 }

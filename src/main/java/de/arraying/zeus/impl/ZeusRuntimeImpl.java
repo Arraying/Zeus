@@ -1,6 +1,7 @@
 package de.arraying.zeus.impl;
 
 import de.arraying.zeus.backend.ZeusException;
+import de.arraying.zeus.backend.ZeusMethods;
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusTask;
 import de.arraying.zeus.std.component.ZeusComponent;
@@ -38,7 +39,7 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
 
     private ScheduledExecutorService executorService;
     private final Map<String, ZeusVariable> predefinedVariables;
-    private final Map<String, Method> methods;
+    private final ZeusMethods methods;
     private final ZeusComponent[] components;
     private final int timeoutThreshold;
     private boolean isShutdown;
@@ -49,7 +50,7 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
      * @param methods A set of methods.
      * @param timeoutThreshold The timeout threshold.
      */
-    public ZeusRuntimeImpl(Map<String, ZeusVariable> predefinedVariables, Map<String, Method> methods, ZeusComponent[] components, int timeoutThreshold) {
+    public ZeusRuntimeImpl(Map<String, ZeusVariable> predefinedVariables, ZeusMethods methods, ZeusComponent[] components, int timeoutThreshold) {
         this.predefinedVariables = predefinedVariables;
         this.methods = methods;
         this.components = components;
@@ -122,10 +123,10 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
 
     /**
      * Gets all methods.
-     * @return An unmodifiable map of methods.
+     * @return A ZeusMethods object.
      */
-    Map<String, Method> getMethods() {
-        return Collections.unmodifiableMap(methods);
+    public ZeusMethods getMethods() {
+        return methods;
     }
 
     /**

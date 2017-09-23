@@ -1,6 +1,5 @@
-package de.arraying.zeus.utils;
+package de.arraying.zeus.backend;
 
-import de.arraying.zeus.Zeus;
 /**
  * Copyright 2017 Arraying
  * <p>
@@ -16,21 +15,47 @@ import de.arraying.zeus.Zeus;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@SuppressWarnings("unused")
-public class ZeusUtil {
+public enum Keyword {
+
+    VAR_CONSTANT("const"),
+    VAR_MUTABLE("mut"),
+    CONTROL_SLEEP("sleep"),
+    CONTROL_STOP("stop"),
+    CONTROL_END("end"),
+    CONDITIONAL_IF("if"),
+    CONDITIONAL_ELSE("else"),
+    CONDITIONAL_ELSE_IF("elif");
 
     /**
-     * Checks if an identifier is a keyword.
+     * Checks whether or not a provided identifier is a keyword.
      * @param identifier The identifier.
      * @return True if it is, false otherwise.
      */
     public static boolean isKeyword(String identifier) {
-        for(String keyword : Zeus.KEYWORDS) {
-            if(identifier.equals(keyword)) {
+        for(Keyword keyword : Keyword.values()) {
+            if(keyword.identifier.equals(identifier)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private final String identifier;
+
+    /**
+     * Sets the keyword's identifier.
+     * @param identifier The identifier.
+     */
+    Keyword(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * Gets the keyword's identifier.
+     * @return The identifier.
+     */
+    public String getIdentifier() {
+        return identifier;
     }
 
 }

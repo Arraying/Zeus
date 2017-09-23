@@ -1,13 +1,12 @@
 package de.arraying.zeus.std.component.components;
 
+import de.arraying.zeus.backend.Keyword;
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
 import de.arraying.zeus.backend.ZeusMethod;
 import de.arraying.zeus.impl.ZeusTaskImpl;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.token.Token;
-import de.arraying.zeus.utils.ZeusMethodUtil;
-import de.arraying.zeus.utils.ZeusUtil;
 import de.arraying.zeus.utils.ZeusVariableUtil;
 import de.arraying.zeus.variable.VariableType;
 import de.arraying.zeus.variable.ZeusVariable;
@@ -33,7 +32,7 @@ public class StandardComponentVariable implements ZeusStandardComponent {
 
     /**
      * Invokes the component.
-     * @param task The impl of the task in order to access some impl only methods.
+     * @param task The impl of the task in order to access some impl-only methods.
      * @param tokens An array of all tokens that have been tokenized.
      * @param lineNumber The line number.
      * @throws ZeusException If an error occurs.
@@ -41,12 +40,21 @@ public class StandardComponentVariable implements ZeusStandardComponent {
     @Override
     public void invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber)
             throws ZeusException {
-        Token variableType = tokens[0];
-        if(variableType.getType() != Patterns.IDENTIFIER) {
+        Token first = tokens[0];
+        if(first.getType() != Patterns.IDENTIFIER) {
             return;
         }
-        VariableType type = VariableType.fromIdentifier(variableType.getToken());
+        VariableType type = VariableType.fromIdentifier(first.getToken());
         if(type == null) {
+            if(tokens.length >= 3
+                    && isEquals(tokens[1])) {
+                ZeusVariable variable = task.getVariable(first.getToken());
+                if(variable == null) {
+                    throw new ZeusException("Cannot update non-existent variable \"" + first.getToken() + "\".", lineNumber);
+                }
+                Object value = handleValue(task, tokens, 2, lineNumber);
+                task.updateVariable(ZeusVariableUtil.createVariable(variable.type(), variable.identifier(), value), lineNumber);
+            }
             return;
         }
         if(tokens.length < 2) {
@@ -58,14 +66,15 @@ public class StandardComponentVariable implements ZeusStandardComponent {
                     identifier.getType() + ".", lineNumber);
         }
         String name = identifier.getToken();
-        if(ZeusUtil.isKeyword(name)) {
+        if(Keyword.isKeyword(name)) {
             throw new ZeusException("The variable name \"" + name + "\" is invalid as it is a keyword.", lineNumber);
         }
         if(tokens.length < 3) {
             throw new ZeusException("Expected an equals sign for variable declaration.", lineNumber);
         }
         Token equals = tokens[2];
-        if(equals.getType() != Patterns.TOKEN) {
+        if(equals.getType() != Patterns.TOKEN
+                || !equals.getToken().equals("=")) {
             throw new ZeusException("Expected a literal token for variable token, instead found " +
                     equals.getType() + ".", lineNumber);
         }
@@ -76,7 +85,22 @@ public class StandardComponentVariable implements ZeusStandardComponent {
         if(tokens.length < 4) {
             throw new ZeusException("Expected a variable value.", lineNumber);
         }
-        Token value = tokens[3];
+        Object variableValue = handleValue(task, tokens, 3, lineNumber);
+        task.updateVariable(ZeusVariableUtil.createVariable(type, name, variableValue), lineNumber);
+    }
+
+    /**
+     * Handles the variable value and gets an Object as a value.
+     * @param task The task impl. Used to access impl-only methods.
+     * @param tokens An array of all tokens.
+     * @param valueIndex The index where the value starts.
+     * @param lineNumber The line number.
+     * @return An object.
+     * @throws ZeusException If an error occurs.
+     */
+    private Object handleValue(ZeusTaskImpl task, Token[] tokens, int valueIndex, int lineNumber)
+            throws ZeusException {
+        Token value = tokens[valueIndex];
         Object variableValue;
         if(value.getType().isDataType()) {
             variableValue = ZeusVariableUtil.getVariableValue(value);
@@ -91,8 +115,8 @@ public class StandardComponentVariable implements ZeusStandardComponent {
                 }
                 variableValue = variable.value();
             } else {
-                Token[] methodTokens = Arrays.copyOfRange(tokens, 3, tokens.length);
-                ZeusMethod method = ZeusMethodUtil.processMethod(task, methodTokens, lineNumber);
+                Token[] methodTokens = Arrays.copyOfRange(tokens, valueIndex, tokens.length);
+                ZeusMethod method = ZeusMethod.processMethod(task, methodTokens, lineNumber);
                 if(method.getReturnValue() == null) {
                     throw new ZeusException("The method in variable declaration returned null.", lineNumber);
                 }
@@ -101,7 +125,17 @@ public class StandardComponentVariable implements ZeusStandardComponent {
         } else {
             throw new ZeusException("Found unexpected token as a variable value.", lineNumber);
         }
-        task.updateVariable(ZeusVariableUtil.createVariable(type, name, variableValue), lineNumber);
+        return variableValue;
+    }
+
+    /**
+     * Whether or not the token is an equals ("=") token.
+     * @param token The token.
+     * @return True if it is, false otherwise.
+     */
+    private boolean isEquals(Token token) {
+        return token.getType() == Patterns.TOKEN
+                && token.getToken().equals("=");
     }
 
 }

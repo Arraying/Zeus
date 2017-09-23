@@ -70,7 +70,7 @@ public class ZeusVariableUtil {
                 case TYPE_BOOL:
                     return Boolean.valueOf(value);
                 case TYPE_LONG:
-                    return Long.valueOf(value.substring(1));
+                    return Long.valueOf(value.substring(0, value.length()-1));
                 case TYPE_DOUBLE:
                     return Double.valueOf(value);
                 case TYPE_STRING:

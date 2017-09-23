@@ -18,11 +18,6 @@ package de.arraying.zeus.backend;
 public enum Patterns {
 
     /**
-     * The integer pattern.
-     */
-    TYPE_INT("^-?[0-9]+", true),
-
-    /**
      * The boolean pattern.
      */
     TYPE_BOOL("^(true|false)$", true),
@@ -30,12 +25,17 @@ public enum Patterns {
     /**
      * The long pattern.
      */
-    TYPE_LONG("^[Ll]-?[0-9]+$", true),
+    TYPE_LONG("^-?[0-9]+[Ll]", true),
 
     /**
      * The double pattern.
      */
-    TYPE_DOUBLE("^-?[0-9]*\\.[0-9]+$", true),
+    TYPE_DOUBLE("^-?[0-9]*\\.[0-9]+", true),
+
+    /**
+     * The integer pattern.
+     */
+    TYPE_INT("^-?[0-9]+", true),
 
     /**
      * The string pattern.

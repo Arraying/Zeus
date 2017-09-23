@@ -1,7 +1,5 @@
 package de.arraying.zeus;
 
-import de.arraying.zeus.variable.VariableType;
-
 /**
  * Copyright 2017 Arraying
  * <p>
@@ -27,7 +25,7 @@ public class Zeus {
     /**
      * The current version of Zeus.
      */
-    public static final String VERSION = "0.2.1";
+    public static final String VERSION = "0.3.0";
 
     /**
      * The main Zeus developer/author.
@@ -39,14 +37,6 @@ public class Zeus {
      */
     public static final String[] CONTRIBUTORS = new String[] {
             "xaanit"
-    };
-
-    /**
-     * An array of all reserved keywords in Zeus.
-     */
-    public static final String[] KEYWORDS = new String[] {
-            VariableType.CONSTANT.getIdentifier(),
-            VariableType.MUTABLE.getIdentifier()
     };
 
 }

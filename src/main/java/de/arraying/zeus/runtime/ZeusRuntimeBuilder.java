@@ -1,24 +1,25 @@
 package de.arraying.zeus.runtime;
 
 import de.arraying.zeus.backend.ZeusException;
+import de.arraying.zeus.backend.ZeusMethods;
 import de.arraying.zeus.backend.annotations.ZeusMethod;
 import de.arraying.zeus.backend.annotations.ZeusStandard;
 import de.arraying.zeus.impl.ZeusRuntimeImpl;
 import de.arraying.zeus.std.component.ZeusComponent;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.std.component.components.StandardComponentMethod;
+import de.arraying.zeus.std.component.components.StandardComponentSleep;
+import de.arraying.zeus.std.component.components.StandardComponentStop;
 import de.arraying.zeus.std.component.components.StandardComponentVariable;
 import de.arraying.zeus.std.method.ZeusStandardMethod;
+import de.arraying.zeus.std.method.methods.StandardMethodsArithmetic;
 import de.arraying.zeus.std.method.methods.StandardMethodsLogic;
 import de.arraying.zeus.std.method.methods.StandardMethodsOut;
-import de.arraying.zeus.utils.ZeusMethodUtil;
+import de.arraying.zeus.std.method.methods.StandardMethodsString;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Copyright 2017 Arraying
@@ -39,15 +40,19 @@ import java.util.Map;
 public class ZeusRuntimeBuilder {
 
     private final Map<String, ZeusVariable> variables = new HashMap<>();
-    private final Map<String, Method> methods = new HashMap<>();
+    private final Set<Method> methods = new HashSet<>();
     private final List<ZeusComponent> components = new ArrayList<>();
     private final ZeusStandardMethod[] standardMethods = new ZeusStandardMethod[] {
+            new StandardMethodsArithmetic(),
             new StandardMethodsOut(),
             new StandardMethodsLogic(),
+            new StandardMethodsString()
     };
     private final ZeusStandardComponent[] standardComponents = new ZeusStandardComponent[] {
-            new StandardComponentVariable(),
-            new StandardComponentMethod()
+            new StandardComponentMethod(),
+            new StandardComponentSleep(),
+            new StandardComponentStop(),
+            new StandardComponentVariable()
     };
     private int timeoutThreshold = -1;
 
@@ -81,21 +86,21 @@ public class ZeusRuntimeBuilder {
             Class provided = methodContainer.getClass();
             if(provided.isAnnotationPresent(ZeusStandard.class)) {
                 for(Method method : provided.getMethods()) {
-                    methods.put(method.getName(), method);
+                    methods.add(method);
                 }
                 continue;
             }
-            if(!ZeusMethodUtil.isValidMethodContainer(provided)) {
+            if(!de.arraying.zeus.backend.ZeusMethod.isValidMethodContainer(provided)) {
                 throw new ZeusException("The method container must have an empty constructor and must be accessible.");
             }
             for(Method method : provided.getMethods()) {
                 if(!method.isAnnotationPresent(ZeusMethod.class)) {
                     continue;
                 }
-                if(!ZeusMethodUtil.isValidMethod(method)) {
-                    throw new ZeusException("The provided method (" + method.getName() + ") is invalid.");
+                if(!de.arraying.zeus.backend.ZeusMethod.isValidMethod(method)) {
+                    throw new ZeusException("The provided method (" + method.getName() + ", " + method.getParameterCount() + " parameters) is invalid.");
                 }
-                methods.put(method.getName(), method);
+                methods.add(method);
             }
         }
         return this;
@@ -158,7 +163,7 @@ public class ZeusRuntimeBuilder {
      * @return A valid Zeus runtime.
      */
     public ZeusRuntime build() {
-        return new ZeusRuntimeImpl(variables, methods, components.toArray(new ZeusComponent[components.size()]), timeoutThreshold);
+        return new ZeusRuntimeImpl(variables, new ZeusMethods(methods), components.toArray(new ZeusComponent[components.size()]), timeoutThreshold);
     }
 
     /**
