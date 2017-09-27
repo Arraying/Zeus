@@ -74,7 +74,8 @@ public class ZeusVariableUtil {
                 case TYPE_DOUBLE:
                     return Double.valueOf(value);
                 case TYPE_STRING:
-                    return value.substring(1, value.length()-1);
+                    return value.substring(1, value.length()-1)
+                            .replace("\\\"", "\"");
                 default:
                     return null;
             }

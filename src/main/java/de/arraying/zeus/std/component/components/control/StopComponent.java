@@ -1,8 +1,9 @@
-package de.arraying.zeus.std.component.components;
+package de.arraying.zeus.std.component.components.control;
 
+import de.arraying.zeus.backend.Keyword;
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
-import de.arraying.zeus.backend.ZeusMethod;
+import de.arraying.zeus.event.events.StopEvent;
 import de.arraying.zeus.impl.ZeusTaskImpl;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
 import de.arraying.zeus.token.Token;
@@ -22,24 +23,30 @@ import de.arraying.zeus.token.Token;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class StandardComponentMethod implements ZeusStandardComponent {
+public class StopComponent implements ZeusStandardComponent {
 
     /**
      * Invokes the component.
      * @param task The impl of the task in order to access some impl only methods.
      * @param tokens An array of all tokens that have been tokenized.
      * @param lineNumber The line number.
+     * @return True if successful, false otherwise.
      * @throws ZeusException if an error occurs.
      */
     @Override
-    public void invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber)
+    public boolean invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber)
             throws ZeusException {
         Token identifier = tokens[0];
         if(identifier.getType() != Patterns.IDENTIFIER
-                || !ZeusMethod.isValidMethodInvocation(tokens)) {
-            return;
+                || !identifier.getToken().equals(Keyword.CONTROL_STOP.getIdentifier())) {
+            return false;
         }
-        ZeusMethod.processMethod(task, tokens, lineNumber);
+        if(tokens.length != 1) {
+            throw new ZeusException("Expected just the stop keyword, nothing else.", lineNumber);
+        }
+        task.onEvent(new StopEvent(lineNumber));
+        task.kill();
+        return true;
     }
 
 }

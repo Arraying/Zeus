@@ -4,22 +4,26 @@ import de.arraying.zeus.backend.ZeusException;
 import de.arraying.zeus.backend.ZeusMethods;
 import de.arraying.zeus.backend.annotations.ZeusMethod;
 import de.arraying.zeus.backend.annotations.ZeusStandard;
+import de.arraying.zeus.event.ZeusEventListener;
 import de.arraying.zeus.impl.ZeusRuntimeImpl;
 import de.arraying.zeus.std.component.ZeusComponent;
 import de.arraying.zeus.std.component.ZeusStandardComponent;
-import de.arraying.zeus.std.component.components.StandardComponentMethod;
-import de.arraying.zeus.std.component.components.StandardComponentSleep;
-import de.arraying.zeus.std.component.components.StandardComponentStop;
-import de.arraying.zeus.std.component.components.StandardComponentVariable;
+import de.arraying.zeus.std.component.components.MethodComponent;
+import de.arraying.zeus.std.component.components.VariableComponent;
+import de.arraying.zeus.std.component.components.condition.ElseComponent;
+import de.arraying.zeus.std.component.components.condition.IfComponent;
+import de.arraying.zeus.std.component.components.control.EndComponent;
+import de.arraying.zeus.std.component.components.control.SleepComponent;
+import de.arraying.zeus.std.component.components.control.StopComponent;
 import de.arraying.zeus.std.method.ZeusStandardMethod;
-import de.arraying.zeus.std.method.methods.StandardMethodsArithmetic;
-import de.arraying.zeus.std.method.methods.StandardMethodsLogic;
-import de.arraying.zeus.std.method.methods.StandardMethodsOut;
-import de.arraying.zeus.std.method.methods.StandardMethodsString;
+import de.arraying.zeus.std.method.methods.*;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Copyright 2017 Arraying
@@ -41,18 +45,24 @@ public class ZeusRuntimeBuilder {
 
     private final Map<String, ZeusVariable> variables = new HashMap<>();
     private final Set<Method> methods = new HashSet<>();
-    private final List<ZeusComponent> components = new ArrayList<>();
+    private final Set<ZeusComponent> components = new HashSet<>();
+    private final Set<ZeusEventListener> listeners = new HashSet<>();
     private final ZeusStandardMethod[] standardMethods = new ZeusStandardMethod[] {
-            new StandardMethodsArithmetic(),
-            new StandardMethodsOut(),
-            new StandardMethodsLogic(),
-            new StandardMethodsString()
+            new ArithmeticMethods(),
+            new ComparisonMethods(),
+            new DatatypeMethods(),
+            new OutputMethods(),
+            new LogicMethods(),
+            new StringMethods()
     };
     private final ZeusStandardComponent[] standardComponents = new ZeusStandardComponent[] {
-            new StandardComponentMethod(),
-            new StandardComponentSleep(),
-            new StandardComponentStop(),
-            new StandardComponentVariable()
+            new ElseComponent(),
+            new IfComponent(),
+            new EndComponent(),
+            new MethodComponent(),
+            new SleepComponent(),
+            new StopComponent(),
+            new VariableComponent()
     };
     private int timeoutThreshold = -1;
 
@@ -141,6 +151,23 @@ public class ZeusRuntimeBuilder {
     }
 
     /**
+     * Registers event listeners.
+     * @param listeners A array of event listeners.
+     * @return The builder.
+     * @throws ZeusException If the event listeners are null.
+     */
+    public ZeusRuntimeBuilder withEventListeners(ZeusEventListener... listeners)
+            throws ZeusException {
+        for(ZeusEventListener listener : listeners) {
+            if(listener == null) {
+                throw new ZeusException("The provided event listener cannot be null.");
+            }
+            this.listeners.add(listener);
+        }
+        return this;
+    }
+
+    /**
      * Sets the maximum runtime for a task, in order to counter infinity loops and such.
      * @param timeoutThreshold The time in milliseconds. Must be greater than 2000 and 43200000
      * @return The builder.
@@ -159,11 +186,42 @@ public class ZeusRuntimeBuilder {
     }
 
     /**
+     * Unregisters a method.
+     * @param method The method.
+     * @return The builder.
+     * @throws ZeusException If the method is not registered.
+     */
+    public ZeusRuntimeBuilder withoutMethods(Method method)
+            throws ZeusException {
+        if(!methods.contains(method)) {
+            throw new ZeusException("The provided method is not registered.");
+        }
+        methods.remove(components);
+        return this;
+    }
+
+    /**
+     * Unregisters a component.
+     * @param component The component.
+     * @return The builder.
+     * @throws ZeusException If the component is not registered.
+     */
+    public ZeusRuntimeBuilder withoutComponent(ZeusComponent component)
+            throws ZeusException {
+        if(!components.contains(component)) {
+            throw new ZeusException("The provided component is not registered.");
+        }
+        components.remove(component);
+        return this;
+    }
+
+    /**
      * Builds the runtime.
      * @return A valid Zeus runtime.
      */
     public ZeusRuntime build() {
-        return new ZeusRuntimeImpl(variables, new ZeusMethods(methods), components.toArray(new ZeusComponent[components.size()]), timeoutThreshold);
+        return new ZeusRuntimeImpl(variables, new ZeusMethods(methods), components.toArray(new ZeusComponent[components.size()]),
+                listeners.toArray(new ZeusEventListener[listeners.size()]), timeoutThreshold);
     }
 
     /**

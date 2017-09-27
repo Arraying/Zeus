@@ -20,7 +20,7 @@ import de.arraying.zeus.std.method.ZeusStandardMethod;
  */
 @ZeusStandard
 @SuppressWarnings("unused")
-public class StandardMethodsString implements ZeusStandardMethod {
+public class StringMethods implements ZeusStandardMethod {
 
     /**
      * Concatenates a string using a StringBuilder.

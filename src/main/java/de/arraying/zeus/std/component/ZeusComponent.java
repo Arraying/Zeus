@@ -28,8 +28,9 @@ public interface ZeusComponent {
      * @param task The impl of the task in order to access some impl only methods.
      * @param tokens An array of all tokens that have been tokenized.
      * @param lineNumber The line number.
+     * @return True if this is the correct component, false otherwise.
      * @throws ZeusException If an error occurs.
      */
-    void invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber) throws ZeusException;
+    boolean invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber) throws ZeusException;
 
 }

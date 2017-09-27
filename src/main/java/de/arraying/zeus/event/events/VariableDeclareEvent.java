@@ -1,4 +1,7 @@
-package de.arraying.zeus;
+package de.arraying.zeus.event.events;
+
+import de.arraying.zeus.event.generic.VariableEvent;
+import de.arraying.zeus.variable.ZeusVariable;
 
 /**
  * Copyright 2017 Arraying
@@ -15,28 +18,15 @@ package de.arraying.zeus;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Zeus {
+public class VariableDeclareEvent extends VariableEvent {
 
     /**
-     * Private constructor to prevent initialization.
+     * Creates a new generic variable event.
+     * @param variable The variable.
+     * @param lineNumber The line number.
      */
-    private Zeus() {}
-
-    /**
-     * The current version of Zeus.
-     */
-    public static final String VERSION = "0.4.0";
-
-    /**
-     * The main Zeus developer/author.
-     */
-    public static final String AUTHOR = "Arraying";
-
-    /**
-     * An array of all Zeus contributors.
-     */
-    public static final String[] CONTRIBUTORS = new String[] {
-            "xaanit"
-    };
+    public VariableDeclareEvent(ZeusVariable variable, int lineNumber) {
+        super(variable, lineNumber);
+    }
 
 }

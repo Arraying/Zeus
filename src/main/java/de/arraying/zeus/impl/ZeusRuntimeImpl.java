@@ -2,6 +2,7 @@ package de.arraying.zeus.impl;
 
 import de.arraying.zeus.backend.ZeusException;
 import de.arraying.zeus.backend.ZeusMethods;
+import de.arraying.zeus.event.ZeusEventListener;
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusTask;
 import de.arraying.zeus.std.component.ZeusComponent;
@@ -11,8 +12,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -41,6 +40,7 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
     private final Map<String, ZeusVariable> predefinedVariables;
     private final ZeusMethods methods;
     private final ZeusComponent[] components;
+    private final ZeusEventListener[] eventListeners;
     private final int timeoutThreshold;
     private boolean isShutdown;
 
@@ -48,12 +48,15 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
      * Creates a new Zeus runtime.
      * @param predefinedVariables The predefined variables.
      * @param methods A set of methods.
+     * @param components An array of components to use.
+     * @param eventListeners An array of event listeners.
      * @param timeoutThreshold The timeout threshold.
      */
-    public ZeusRuntimeImpl(Map<String, ZeusVariable> predefinedVariables, ZeusMethods methods, ZeusComponent[] components, int timeoutThreshold) {
+    public ZeusRuntimeImpl(Map<String, ZeusVariable> predefinedVariables, ZeusMethods methods, ZeusComponent[] components, ZeusEventListener[] eventListeners, int timeoutThreshold) {
         this.predefinedVariables = predefinedVariables;
         this.methods = methods;
         this.components = components;
+        this.eventListeners = eventListeners;
         this.timeoutThreshold = timeoutThreshold;
         this.isShutdown = false;
         if(timeoutThreshold != -1) {
@@ -127,6 +130,14 @@ public class ZeusRuntimeImpl implements ZeusRuntime {
      */
     public ZeusMethods getMethods() {
         return methods;
+    }
+
+    /**
+     * Gets all event listeners.
+     * @return An array of event listeners.
+     */
+    ZeusEventListener[] getEventListeners() {
+        return eventListeners;
     }
 
     /**

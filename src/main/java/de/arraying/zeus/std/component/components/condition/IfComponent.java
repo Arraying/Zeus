@@ -1,11 +1,12 @@
-package de.arraying.zeus.std.component.components;
+package de.arraying.zeus.std.component.components.condition;
 
 import de.arraying.zeus.backend.Keyword;
 import de.arraying.zeus.backend.Patterns;
 import de.arraying.zeus.backend.ZeusException;
 import de.arraying.zeus.impl.ZeusTaskImpl;
-import de.arraying.zeus.std.component.ZeusStandardComponent;
+import de.arraying.zeus.std.component.ZeusScopeComponent;
 import de.arraying.zeus.token.Token;
+import de.arraying.zeus.utils.ZeusUtil;
 
 /**
  * Copyright 2017 Arraying
@@ -22,44 +23,36 @@ import de.arraying.zeus.token.Token;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class StandardComponentSleep implements ZeusStandardComponent {
+public class IfComponent implements ZeusScopeComponent {
 
     /**
      * Invokes the component.
      * @param task The impl of the task in order to access some impl only methods.
      * @param tokens An array of all tokens that have been tokenized.
      * @param lineNumber The line number.
+     * @return True if successful, false otherwise.
      * @throws ZeusException if an error occurs.
      */
     @Override
-    public void invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber)
+    public boolean invoke(ZeusTaskImpl task, Token[] tokens, int lineNumber)
             throws ZeusException {
         Token identifier = tokens[0];
         if(identifier.getType() != Patterns.IDENTIFIER
-                || !identifier.getToken().equals(Keyword.CONTROL_SLEEP.getIdentifier())) {
-            return;
+                || !identifier.getToken().equals(Keyword.CONDITIONAL_IF.getIdentifier())) {
+            return false;
         }
-        if(tokens.length != 2) {
-            throw new ZeusException("Expected just the sleep keyword and a duration (long), found more/less.", lineNumber);
+        if(tokens.length < 2) {
+            throw new ZeusException("Expected a condition for if statement.", lineNumber);
         }
-        Token duration = tokens[1];
-        if(duration.getType() != Patterns.TYPE_LONG) {
-            throw new ZeusException("Expected a long for the sleep duration.", lineNumber);
+        Object value = ZeusUtil.handleValue(task, tokens, 1, lineNumber);
+        if(!(value instanceof Boolean)) {
+            throw new ZeusException("The condition in the if statement does not return a boolean.", lineNumber);
         }
-        long sleep;
-        try {
-            sleep = Long.valueOf(duration.getToken().substring(1));
-        } catch(NumberFormatException exception) {
-            sleep = -1;
-        }
-        if(sleep <= 0) {
-            throw new ZeusException("The provided sleep duration is not a valid duration.", lineNumber);
-        }
-        try {
-            Thread.sleep(sleep);
-        } catch(InterruptedException exception) {
-            throw new ZeusException("Attempted to sleep the code, but hit an interrupted exception.", lineNumber);
-        }
+        boolean condition = (boolean) value;
+        int scope = task.getScope() + 1;
+        task.setParsing(scope, (condition && task.isParsing(task.getScope())));
+        task.setScope(scope);
+        return true;
     }
 
 }

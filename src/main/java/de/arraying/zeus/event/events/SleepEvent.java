@@ -1,4 +1,6 @@
-package de.arraying.zeus;
+package de.arraying.zeus.event.events;
+
+import de.arraying.zeus.event.generic.ZeusEvent;
 
 /**
  * Copyright 2017 Arraying
@@ -15,28 +17,26 @@ package de.arraying.zeus;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class Zeus {
+public class SleepEvent extends ZeusEvent {
+
+    private final long duration;
 
     /**
-     * Private constructor to prevent initialization.
+     * Creates a new sleep event.
+     * @param duration The duration to sleep for.
+     * @param lineNumber The line number.
      */
-    private Zeus() {}
+    public SleepEvent(long duration, int lineNumber) {
+        super(lineNumber);
+        this.duration = duration;
+    }
 
     /**
-     * The current version of Zeus.
+     * Gets the duration that the code will sleep for.
+     * @return A duration in milliseconds.
      */
-    public static final String VERSION = "0.4.0";
-
-    /**
-     * The main Zeus developer/author.
-     */
-    public static final String AUTHOR = "Arraying";
-
-    /**
-     * An array of all Zeus contributors.
-     */
-    public static final String[] CONTRIBUTORS = new String[] {
-            "xaanit"
-    };
+    public long getDuration() {
+        return duration;
+    }
 
 }

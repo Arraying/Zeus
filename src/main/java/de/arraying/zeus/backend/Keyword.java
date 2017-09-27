@@ -17,6 +17,8 @@ package de.arraying.zeus.backend;
  */
 public enum Keyword {
 
+    BOOLEAN_TRUE("true"),
+    BOOLEAN_FALSE("false"),
     VAR_CONSTANT("const"),
     VAR_MUTABLE("mut"),
     CONTROL_SLEEP("sleep"),

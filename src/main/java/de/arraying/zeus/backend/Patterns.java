@@ -58,7 +58,7 @@ public enum Patterns {
      * A single line comment pattern.
      * Prefixed with "TI" to indicate the tokenizer should ignore it.
      */
-    TI_COMMENT_SINGLE("^\\/\\/.*");
+    TI_COMMENT_SINGLE("^\\s*\\/\\/.*");
 
     private final String stringPattern;
     private final boolean dataType;

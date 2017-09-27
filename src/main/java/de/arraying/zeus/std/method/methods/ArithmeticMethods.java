@@ -20,7 +20,7 @@ import de.arraying.zeus.std.method.ZeusStandardMethod;
  */
 @ZeusStandard
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class StandardMethodsArithmetic implements ZeusStandardMethod {
+public class ArithmeticMethods implements ZeusStandardMethod {
 
     /**
      * Alias of the add() method.

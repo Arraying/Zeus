@@ -1,5 +1,6 @@
 package de.arraying.zeus.std.method.methods;
 
+import de.arraying.zeus.Zeus;
 import de.arraying.zeus.backend.annotations.ZeusStandard;
 import de.arraying.zeus.std.method.ZeusStandardMethod;
 
@@ -19,36 +20,34 @@ import de.arraying.zeus.std.method.ZeusStandardMethod;
  * limitations under the License.
  */
 @SuppressWarnings("unused")
-public @ZeusStandard class StandardMethodsLogic implements ZeusStandardMethod {
+public @ZeusStandard class OutputMethods implements ZeusStandardMethod {
 
     /**
-     * The and logical operator.
-     * @param one The first boolean.
-     * @param two The second boolean.
-     * @return The result.
+     * Prints an Object to the console. Appends a new line.
+     * @param toPrint The object to print.
+     * @return The input.
      */
-    public boolean and(boolean one, boolean two) {
-        return one && two;
+    public Object println(Object toPrint) {
+        System.out.println(toPrint);
+        return toPrint;
     }
 
     /**
-     * The or logical operator.
-     * @param one The first boolean.
-     * @param two The second boolean.
-     * @return The result.
+     * Prints an Object to the console.
+     * @param toPrint The object  to print.
+     * @return The input.
      */
-    public boolean or(boolean one, boolean two) {
-        return one || two;
+    public Object print(Object toPrint) {
+        System.out.print(toPrint);
+        return toPrint;
     }
 
-
     /**
-     * The not logical operator.
-     * @param input The input.
-     * @return The result.
+     * Prints Zeus info to the console.
      */
-    public boolean not(boolean input) {
-        return !input;
+    public void info() {
+        System.out.println("Currently running Zeus, by " + Zeus.AUTHOR + ", version " + Zeus.VERSION + "." +
+                "\nThanks to: " + String.join(", ", Zeus.CONTRIBUTORS) + ".");
     }
 
 }

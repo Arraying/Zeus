@@ -1,14 +1,20 @@
 package de.arraying.zeus.impl;
 
 import de.arraying.zeus.backend.ZeusException;
+import de.arraying.zeus.event.ZeusEventListener;
+import de.arraying.zeus.event.events.VariableDeclareEvent;
+import de.arraying.zeus.event.events.VariableReassignEvent;
+import de.arraying.zeus.event.generic.ZeusEvent;
 import de.arraying.zeus.runtime.ZeusTask;
 import de.arraying.zeus.std.component.ZeusComponent;
+import de.arraying.zeus.std.component.ZeusScopeComponent;
 import de.arraying.zeus.token.Tokenizer;
 import de.arraying.zeus.variable.VariableType;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -28,12 +34,19 @@ import java.util.function.Consumer;
  */
 public class ZeusTaskImpl implements ZeusTask {
 
+    /**
+     * The default scope.
+     */
+    public static final int DEFAULT_SCOPE = 0;
+
     private final Thread current;
     private final ZeusRuntimeImpl runtime;
     private final Map<String, ZeusVariable> variables;
     private final Consumer<ZeusException> error;
     private final String[] code;
     private int currentIndex = 0;
+    private Map<Integer, Boolean> parsingScope = new ConcurrentHashMap<>();
+    private int scope = DEFAULT_SCOPE;
 
     /**
      * Creates a new task.
@@ -47,6 +60,12 @@ public class ZeusTaskImpl implements ZeusTask {
         this.variables = variables;
         this.error = error;
         this.code = code;
+        parsingScope.put(scope, true);
+        for(ZeusVariable variable : variables.values()) {
+            for(ZeusEventListener listener : runtime.getEventListeners()) {
+                listener.onEvent(new VariableDeclareEvent(variable, -1));
+            }
+        }
     }
 
     /**
@@ -68,8 +87,21 @@ public class ZeusTaskImpl implements ZeusTask {
                 if(tokenizer.getTokens().length == 0) {
                     continue;
                 }
+                boolean parse = isParsing(scope);
+                boolean success = false;
                 for(ZeusComponent component : runtime.getComponents()) {
-                    component.invoke(this, tokenizer.getTokens(), lineNumber);
+                    if(!parse
+                            && !(component instanceof ZeusScopeComponent)) {
+                        continue;
+                    }
+                    success = component.invoke(this, tokenizer.getTokens(), lineNumber);
+                    if(success) {
+                        break;
+                    }
+                }
+                if(!success
+                        && parse) {
+                    error(new ZeusException("Unknown component in code.", lineNumber));
                 }
             } catch(ZeusException exception) {
                 error(exception);
@@ -124,11 +156,74 @@ public class ZeusTaskImpl implements ZeusTask {
     public void updateVariable(ZeusVariable variable, int lineNumber)
             throws ZeusException {
         ZeusVariable existing = variables.get(variable.identifier());
+        if(existing == null) {
+            onEvent(new VariableDeclareEvent(variable, lineNumber));
+        } else {
+            if(existing.type() == VariableType.CONSTANT) {
+                throw new ZeusException("The variable \"" + variable.identifier() + "\" cannot be updated as it is a constant.", lineNumber);
+            }
+            onEvent(new VariableReassignEvent(variable, lineNumber));
+        }
+        variables.put(variable.identifier(), variable);
         if(existing != null
                 && existing.type() == VariableType.CONSTANT) {
             throw new ZeusException("The variable \"" + variable.identifier() + "\" cannot be updated as it is a constant.", lineNumber);
         }
         variables.put(variable.identifier(), variable);
+    }
+
+    /**
+     * Throws a new event and passes it to the listeners to handle.
+     * @param event The event.
+     */
+    public void onEvent(ZeusEvent event) {
+        for(ZeusEventListener listener : runtime.getEventListeners()) {
+            listener.onEvent(event);
+        }
+    }
+
+    /**
+     * Whether or not the parser is currently parsing in the specified scope.
+     * @param scope The scope.
+     * @return True if it is, false otherwise.
+     * @throws ZeusException If the provided scope does not exist.
+     */
+    public boolean isParsing(int scope)
+            throws ZeusException {
+        Boolean parsing = parsingScope.get(scope);
+        if(parsing == null) {
+            throw new ZeusException("The provided scope does not exist while parsing.");
+        }
+        return parsing;
+    }
+
+    /**
+     * Sets whether or not the parser should parse in the specified scope.
+     * @param scope The scope.
+     * @param parsing True if it should parse, false othetwise.
+     */
+    public void setParsing(int scope, boolean parsing) {
+        parsingScope.put(scope, parsing);
+    }
+
+    public void debug() {
+        System.out.println("Line " + currentIndex + ": Scope = " + scope + ", " + parsingScope);
+    }
+
+    /**
+     * Gets the scope.
+     * @return The scope.
+     */
+    public int getScope() {
+        return scope;
+    }
+
+    /**
+     * Sets the scope.
+     * @param scope The scope.
+     */
+    public void setScope(int scope) {
+        this.scope = scope;
     }
 
     /**
