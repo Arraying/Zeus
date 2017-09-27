@@ -69,20 +69,6 @@ public class ZeusMethod {
     }
 
     /**
-     * Checks if the class can be instantiated.
-     * @param provided The class provided.
-     * @return True if it is, false otherwise.
-     */
-    public static boolean isValidMethodContainer(Class provided) {
-        try {
-            provided.newInstance();
-            return true;
-        } catch(InstantiationException | IllegalAccessException exception) {
-            return false;
-        }
-    }
-
-    /**
      * Processes the method.
      * @param task The current task, used to retrieve variables and methods.
      * @param rawTokens An array of all the line's tokens.
@@ -148,7 +134,10 @@ public class ZeusMethod {
         }
         try {
             Object[] params = parameters.toArray(new Object[parameters.size()]);
-            Object invocationObject = method.getDeclaringClass().newInstance();
+            Object invocationObject = task.getMethodContainer(method);
+            if(invocationObject == null) {
+                throw new ZeusException("Internal error; method container returned null.", lineNumber);
+            }
             Object returnValue;
             if(!method.isVarArgs()) {
                 returnValue = method.invoke(invocationObject, (Object[]) params);
@@ -156,7 +145,7 @@ public class ZeusMethod {
                 returnValue = method.invoke(invocationObject, (Object) params);
             }
             return new ZeusMethod(returnValue);
-        } catch(InstantiationException | IllegalAccessException | IllegalArgumentException exception) {
+        } catch(IllegalAccessException | IllegalArgumentException exception) {
             throw new ZeusException("Encountered " + exception.toString(), lineNumber);
         } catch(InvocationTargetException exception) {
             throw new ZeusException("Invoking the method caused an error.", lineNumber);

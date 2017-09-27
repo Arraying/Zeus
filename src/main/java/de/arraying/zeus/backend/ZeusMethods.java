@@ -28,15 +28,18 @@ public class ZeusMethods {
     static final int VARARGS_INDEX = -1;
 
     private final Map<String, Map<Integer, Method>> methods = new ConcurrentHashMap<>();
+    private final Map<Method, Object> methodContainers;
 
     /**
      * Creates a method collection object.
      * @param methods A set of all registered methods.
+     * @param methodContainers A map of all method containers.
      */
-    public ZeusMethods(Set<Method> methods) {
+    public ZeusMethods(Set<Method> methods, Map<Method, Object> methodContainers) {
         for(Method method : methods) {
             registerMethod(method);
         }
+        this.methodContainers = methodContainers;
     }
 
     /**
@@ -51,6 +54,15 @@ public class ZeusMethods {
             return null;
         }
         return methods.get(parameterCount);
+    }
+
+    /**
+     * Gets the container of a method.
+     * @param method The method.
+     * @return The container, or null.
+     */
+    public Object getContainer(Method method) {
+        return methodContainers.get(method);
     }
 
     /**

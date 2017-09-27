@@ -138,6 +138,15 @@ public class ZeusTaskImpl implements ZeusTask {
     }
 
     /**
+     * Gets a method container.
+     * @param method The method.
+     * @return An object or null.
+     */
+    public Object getMethodContainer(Method method) {
+        return runtime.getMethods().getContainer(method);
+    }
+
+    /**
      * Gets a variable by identifier.
      * @param identifier The identifier.
      * @return A variable or null if it does not exist.
@@ -204,10 +213,6 @@ public class ZeusTaskImpl implements ZeusTask {
      */
     public void setParsing(int scope, boolean parsing) {
         parsingScope.put(scope, parsing);
-    }
-
-    public void debug() {
-        System.out.println("Line " + currentIndex + ": Scope = " + scope + ", " + parsingScope);
     }
 
     /**

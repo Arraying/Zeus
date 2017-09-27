@@ -45,6 +45,7 @@ public class ZeusRuntimeBuilder {
 
     private final Map<String, ZeusVariable> variables = new HashMap<>();
     private final Set<Method> methods = new HashSet<>();
+    private final Map<Method, Object> methodContainers = new HashMap<>();
     private final Set<ZeusComponent> components = new HashSet<>();
     private final Set<ZeusEventListener> listeners = new HashSet<>();
     private final ZeusStandardMethod[] standardMethods = new ZeusStandardMethod[] {
@@ -97,11 +98,9 @@ public class ZeusRuntimeBuilder {
             if(provided.isAnnotationPresent(ZeusStandard.class)) {
                 for(Method method : provided.getMethods()) {
                     methods.add(method);
+                    this.methodContainers.put(method, methodContainer);
                 }
                 continue;
-            }
-            if(!de.arraying.zeus.backend.ZeusMethod.isValidMethodContainer(provided)) {
-                throw new ZeusException("The method container must have an empty constructor and must be accessible.");
             }
             for(Method method : provided.getMethods()) {
                 if(!method.isAnnotationPresent(ZeusMethod.class)) {
@@ -111,6 +110,7 @@ public class ZeusRuntimeBuilder {
                     throw new ZeusException("The provided method (" + method.getName() + ", " + method.getParameterCount() + " parameters) is invalid.");
                 }
                 methods.add(method);
+                this.methodContainers.put(method, methodContainer);
             }
         }
         return this;
@@ -220,7 +220,7 @@ public class ZeusRuntimeBuilder {
      * @return A valid Zeus runtime.
      */
     public ZeusRuntime build() {
-        return new ZeusRuntimeImpl(variables, new ZeusMethods(methods), components.toArray(new ZeusComponent[components.size()]),
+        return new ZeusRuntimeImpl(variables, new ZeusMethods(methods, methodContainers), components.toArray(new ZeusComponent[components.size()]),
                 listeners.toArray(new ZeusEventListener[listeners.size()]), timeoutThreshold);
     }
 
