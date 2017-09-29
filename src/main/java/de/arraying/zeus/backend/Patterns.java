@@ -20,7 +20,7 @@ public enum Patterns {
     /**
      * The boolean pattern.
      */
-    TYPE_BOOL("^(true|false)$", true),
+    TYPE_BOOL("^(true|false)", true),
 
     /**
      * The long pattern.
