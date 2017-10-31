@@ -72,7 +72,7 @@ public @ZeusStandard class DatatypeMethods implements ZeusStandardMethod {
      * @param object The object.
      * @return A boolean.
      */
-    public Boolean to_boo(Object object) {
+    public Boolean to_bool(Object object) {
         return Boolean.valueOf(object.toString());
     }
 
