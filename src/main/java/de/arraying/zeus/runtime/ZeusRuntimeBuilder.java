@@ -6,17 +6,17 @@ import de.arraying.zeus.backend.annotations.ZeusMethod;
 import de.arraying.zeus.backend.annotations.ZeusStandard;
 import de.arraying.zeus.event.ZeusEventListener;
 import de.arraying.zeus.impl.ZeusRuntimeImpl;
-import de.arraying.zeus.std.component.ZeusComponent;
-import de.arraying.zeus.std.component.ZeusStandardComponent;
-import de.arraying.zeus.std.component.components.MethodComponent;
-import de.arraying.zeus.std.component.components.VariableComponent;
-import de.arraying.zeus.std.component.components.condition.ElseComponent;
-import de.arraying.zeus.std.component.components.condition.IfComponent;
-import de.arraying.zeus.std.component.components.control.EndComponent;
-import de.arraying.zeus.std.component.components.control.SleepComponent;
-import de.arraying.zeus.std.component.components.control.StopComponent;
-import de.arraying.zeus.std.method.ZeusStandardMethod;
-import de.arraying.zeus.std.method.methods.*;
+import de.arraying.zeus.standard.component.ZeusComponent;
+import de.arraying.zeus.standard.component.ZeusStandardComponent;
+import de.arraying.zeus.standard.component.components.MethodComponent;
+import de.arraying.zeus.standard.component.components.VariableComponent;
+import de.arraying.zeus.standard.component.components.condition.ElseComponent;
+import de.arraying.zeus.standard.component.components.condition.IfComponent;
+import de.arraying.zeus.standard.component.components.control.EndComponent;
+import de.arraying.zeus.standard.component.components.control.SleepComponent;
+import de.arraying.zeus.standard.component.components.control.StopComponent;
+import de.arraying.zeus.standard.method.ZeusStandardMethod;
+import de.arraying.zeus.standard.method.methods.*;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.lang.reflect.Method;
@@ -96,7 +96,14 @@ public class ZeusRuntimeBuilder {
             }
             Class provided = methodContainer.getClass();
             if(provided.isAnnotationPresent(ZeusStandard.class)) {
+                methodIteration:
                 for(Method method : provided.getMethods()) {
+                    objectIteration:
+                    for(Method objectMethod : Object.class.getDeclaredMethods()) {
+                        if(method.toString().equalsIgnoreCase(objectMethod.toString())) {
+                            continue methodIteration;
+                        }
+                    }
                     methods.add(method);
                     this.methodContainers.put(method, methodContainer);
                 }
@@ -191,12 +198,27 @@ public class ZeusRuntimeBuilder {
      * @return The builder.
      * @throws ZeusException If the method is not registered.
      */
-    public ZeusRuntimeBuilder withoutMethods(Method method)
+    public ZeusRuntimeBuilder withoutMethod(Method method)
             throws ZeusException {
         if(!methods.contains(method)) {
             throw new ZeusException("The provided method is not registered.");
         }
-        methods.remove(components);
+        methods.remove(method);
+        return this;
+    }
+
+    /**
+     * Unregisters all methods where the parent class is equal to the container class.
+     * @param container The method container.
+     * @return The builder.
+     * @throws ZeusException If no methods were unregistered.
+     */
+    public ZeusRuntimeBuilder withoutMethodContainer(Class<?> container)
+            throws ZeusException {
+        boolean removed = methods.removeIf(entry -> entry.getDeclaringClass().equals(container));
+        if(!removed) {
+            throw new ZeusException("The registered methods do not contain a method in which the parent class is equal to the one specified.");
+        }
         return this;
     }
 
@@ -206,12 +228,12 @@ public class ZeusRuntimeBuilder {
      * @return The builder.
      * @throws ZeusException If the component is not registered.
      */
-    public ZeusRuntimeBuilder withoutComponent(ZeusComponent component)
+    public ZeusRuntimeBuilder withoutComponent(Class<? extends ZeusComponent> component)
             throws ZeusException {
-        if(!components.contains(component)) {
+        boolean removed = components.removeIf(entry -> entry.getClass().equals(component));
+        if(!removed) {
             throw new ZeusException("The provided component is not registered.");
         }
-        components.remove(component);
         return this;
     }
 

@@ -5,7 +5,7 @@ import de.arraying.zeus.backend.ZeusMethods;
 import de.arraying.zeus.event.ZeusEventListener;
 import de.arraying.zeus.runtime.ZeusRuntime;
 import de.arraying.zeus.runtime.ZeusTask;
-import de.arraying.zeus.std.component.ZeusComponent;
+import de.arraying.zeus.standard.component.ZeusComponent;
 import de.arraying.zeus.variable.ZeusVariable;
 
 import java.io.BufferedReader;

@@ -129,7 +129,7 @@ public class ZeusMethod {
         if(method == null) {
             method = task.getMethod(identifier, ZeusMethods.VARARGS_INDEX);
             if(method == null) {
-                throw new ZeusException("A method with the identifier \"" + identifier + "\" and " + parameters.size() + " parameters does not exist.", lineNumber);
+                throw new ZeusException("A method with the identifier \"" + identifier + "\" and " + parameters.size() + " parameter(s) does not exist.", lineNumber);
             }
         }
         try {
