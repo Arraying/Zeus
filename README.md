@@ -2,7 +2,7 @@
 
 # A custom scripting language
 
-[![Zeus](https://jitpack.io/v/Arraying/life.svg)](https://jitpack.io/#arraying/zeus)
+[![Zeus](https://jitpack.io/v/Arraying/Zeus.svg)](https://jitpack.io/#arraying/zeus)
 
 Zeus is a custom scripting language designed to be embedded into Java code to allow users to execute scripts in an enviroment that is fully manageable by the developer(s).
 
