@@ -33,6 +33,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Integer)) {
+            throw new IllegalArgumentException("Expected type integer while subtracting, found \"" + first + "\".");
+        }
+        i = (Integer) first;
         for(Object entry : entries) {
             if(!(entry instanceof Integer)) {
                 throw new IllegalArgumentException("Expected type integer while adding, found \"" + entry + "\".");
@@ -53,6 +58,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Integer)) {
+            throw new IllegalArgumentException("Expected type integer while subtracting, found \"" + first + "\".");
+        }
+        i = (Integer) first;
         for(Object entry : entries) {
             if(!(entry instanceof Integer)) {
                 throw new IllegalArgumentException("Expected type integer while subtracting, found \"" + entry + "\".");
@@ -73,6 +83,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Integer)) {
+            throw new IllegalArgumentException("Expected type integer while subtracting, found \"" + first + "\".");
+        }
+        i = (Integer) first;
         for(Object entry : entries) {
             if(!(entry instanceof Integer)) {
                 throw new IllegalArgumentException("Expected type integer while multiplying, found \"" + entry + "\".");
@@ -93,6 +108,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Integer)) {
+            throw new IllegalArgumentException("Expected type integer while subtracting, found \"" + first + "\".");
+        }
+        i = (Integer) first;
         for(Object entry : entries) {
             if(!(entry instanceof Integer)) {
                 throw new IllegalArgumentException("Expected type integer while dividing, found \"" + entry + "\".");
@@ -190,6 +210,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Long)) {
+            throw new IllegalArgumentException("Expected type Long while subtracting, found \"" + first + "\".");
+        }
+        i = (Long) first;
         for(Object entry : entries) {
             if(!(entry instanceof Long)) {
                 throw new IllegalArgumentException("Expected type Long while adding, found \"" + entry + "\".");
@@ -210,6 +235,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Long)) {
+            throw new IllegalArgumentException("Expected type Long while subtracting, found \"" + first + "\".");
+        }
+        i = (Long) first;
         for(Object entry : entries) {
             if(!(entry instanceof Long)) {
                 throw new IllegalArgumentException("Expected type Long while subtracting, found \"" + entry + "\".");
@@ -230,6 +260,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Long)) {
+            throw new IllegalArgumentException("Expected type Long while subtracting, found \"" + first + "\".");
+        }
+        i = (Long) first;
         for(Object entry : entries) {
             if(!(entry instanceof Long)) {
                 throw new IllegalArgumentException("Expected type Long while multiplying, found \"" + entry + "\".");
@@ -250,6 +285,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Long)) {
+            throw new IllegalArgumentException("Expected type Long while subtracting, found \"" + first + "\".");
+        }
+        i = (Long) first;
         for(Object entry : entries) {
             if(!(entry instanceof Long)) {
                 throw new IllegalArgumentException("Expected type Long while dividing, found \"" + entry + "\".");
@@ -298,6 +338,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Double)) {
+            throw new IllegalArgumentException("Expected type Double while subtracting, found \"" + first + "\".");
+        }
+        i = (Double) first;
         for(Object entry : entries) {
             if(!(entry instanceof Double)) {
                 throw new IllegalArgumentException("Expected type Double while adding, found \"" + entry + "\".");
@@ -318,6 +363,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Double)) {
+            throw new IllegalArgumentException("Expected type Double while subtracting, found \"" + first + "\".");
+        }
+        i = (Double) first;
         for(Object entry : entries) {
             if(!(entry instanceof Double)) {
                 throw new IllegalArgumentException("Expected type Double while subtracting, found \"" + entry + "\".");
@@ -338,6 +388,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Double)) {
+            throw new IllegalArgumentException("Expected type Double while subtracting, found \"" + first + "\".");
+        }
+        i = (Double) first;
         for(Object entry : entries) {
             if(!(entry instanceof Double)) {
                 throw new IllegalArgumentException("Expected type Double while multiplying, found \"" + entry + "\".");
@@ -358,6 +413,11 @@ public class ArithmeticMethods implements ZeusStandardMethod {
         if(entries.length == 0) {
             return i;
         }
+        Object first = entries[0];
+        if(!(first instanceof Double)) {
+            throw new IllegalArgumentException("Expected type Double while subtracting, found \"" + first + "\".");
+        }
+        i = (Double) first;
         for(Object entry : entries) {
             if(!(entry instanceof Double)) {
                 throw new IllegalArgumentException("Expected type Double while dividing, found \"" + entry + "\".");
